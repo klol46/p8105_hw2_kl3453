@@ -1,0 +1,7 @@
+---
+title: "HW2: Markdown file"
+author: "Kevin Liu"
+date: "2023-09-30"
+output: github_document
+---
+
