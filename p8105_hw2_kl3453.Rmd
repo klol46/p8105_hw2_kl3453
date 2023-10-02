@@ -106,14 +106,82 @@ __Response__
   
 # Problem 2
 
-Read and clean the Mr. Trash Wheel sheet:
+## Read and clean the Mr. Trash Wheel sheet:
 
 *   specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures;  columns containing notes) using arguments in read_excel
 *   use reasonable variable names
 *   omit rows that do not include dumpster-specific data
 
 ```{r}
-trash_df =
-  readxl::read_excel()
+mr_trash_df =
+  readxl::read_xlsx("./data/202207 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", skip = 1, n_max = 547) |> 
+  janitor::clean_names() |> 
+  mutate(dump_name = "mstr") |> 
+  select(-x15, -x16) |> 
+  select(dump_name, everything()) |> 
+  mutate(year = as.double(year))
+  
+```
+
+## Update the data to include a new homes_powered variable based on this calculation.
+The data includes a column for the (approximate) number of homes powered. This calculation is described in the Homes powered note, but not applied to every row in the dataset.
+
+*   Homes Powered - Each ton of trash equates to on average 500 kilowatts of electricity.  An average household will use 30 kilowatts per day."
+
+```{r}
+mr_trash_df = 
+  mutate(mr_trash_df, homes_powered = (weight_tons * 500) / 30)
+
+```
+
+## Use a similar process to import, clean, and organize the data for Professor Trash Wheel and Gwynnda.. 
+and combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to all datasets before combining.
+
+### Professor Trash Wheel
+```{r}
+prof_trash_df =
+  readxl::read_xlsx("./data/202207 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1, n_max = 94) |> 
+  janitor::clean_names() |> 
+  mutate(dump_name = "prof") |> 
+  select(dump_name, everything())
+
+```
+
+### Gwynnda Trash Wheel
+```{r}
+gwynnda_trash_df =
+  readxl::read_xlsx("./data/202207 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1, n_max = 107) |> 
+  janitor::clean_names() |> 
+  mutate(dump_name = "gwyn") |> 
+  select(dump_name, everything())
+```
+
+### Merge All 3 Trash Wheels
+```{r}
+mstr_prof_gwynnda_df = 
+  bind_rows(mr_trash_df, prof_trash_df, gwynnda_trash_df)
+```
+
+## Write a paragraph about these data; you are encouraged to use inline R.
+
+Be sure to note the number of observations in the resulting dataset, and give examples of key variables. 
+
+__Response__
+  mr_trash_df contains the converted xlsx file to R studio dataframe data which has 548 observations of which are the days that the trash wheel was deployed and used. The amount of trash collected was enumerated (ie. weight_tons) and the types of trash collected where enumerated as well (ie. plastic_bottles) and a final "houses_powered" variable results as a way to measure the amount of trash collected. prof_trash_df and gwynna_trash_df are similar but contain 95 observations and 108 observations respectively. The final combination of the 3 contains the sum of the three separate dataframes as the dataframes are stacked together into one dataframe.
+  
+  
+### For available data, what was the total weight of trash collected by Professor Trash Wheel? 
+
+```{r}
+sum(pull(mr_trash_df, weight_tons))
+```
+
+__Response__
+  The total weight of trash collected by professor trash wheel was 3496.72 tons. 
+
+
+### What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+```{r}
+sum(pull(gwynnda_trash_df, cigarette_butts))
 ```
 
