@@ -104,7 +104,7 @@ __Response__
   The "unemployment" dataset contains 68 observations of 13 variables. The first column variable the year, denotes the year for the row while the next 12 column variables designates the month of that year. Within the cells are the unemployment rates for a partcular month in a year. During data processing, "unemployement" was long-ified and contains data from 1948 to 2015.
   The resulting dataset has a combination of all three datasets. "Unemployment" has been made long-ified in order to be properly merged with "pols" and "snp" based on month and year. It is a dataset with 822 observations and 11 variables where all three were merged based on year + month with close + unemployment being added to "pols" dataset.
   
-# Problem 2
+# Problem 2 (This was initially done with old dataset)
 
 ## Read and clean the Mr. Trash Wheel sheet:
 
@@ -114,7 +114,7 @@ __Response__
 
 ```{r}
 mr_trash_df =
-  readxl::read_xlsx("./data/202207 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", skip = 1, n_max = 547) |> 
+  readxl::read_xlsx("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", skip = 1, n_max = 584) |> 
   janitor::clean_names() |> 
   mutate(dump_name = "mstr") |> 
   select(-x15, -x16) |> 
@@ -140,7 +140,7 @@ and combine these with the Mr. Trash Wheel dataset to produce a single tidy data
 ### Professor Trash Wheel
 ```{r}
 prof_trash_df =
-  readxl::read_xlsx("./data/202207 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1, n_max = 94) |> 
+  readxl::read_xlsx("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1, n_max = 106) |> 
   janitor::clean_names() |> 
   mutate(dump_name = "prof") |> 
   select(dump_name, everything())
@@ -150,7 +150,7 @@ prof_trash_df =
 ### Gwynnda Trash Wheel
 ```{r}
 gwynnda_trash_df =
-  readxl::read_xlsx("./data/202207 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1, n_max = 107) |> 
+  readxl::read_xlsx("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1, n_max = 155) |> 
   janitor::clean_names() |> 
   mutate(dump_name = "gwyn") |> 
   select(dump_name, everything())
@@ -167,7 +167,7 @@ mstr_prof_gwynnda_df =
 Be sure to note the number of observations in the resulting dataset, and give examples of key variables. 
 
 __Response__
-  mr_trash_df contains the converted xlsx file to R studio dataframe data which has 548 observations of which are the days that the trash wheel was deployed and used. The amount of trash collected was enumerated (ie. weight_tons) and the types of trash collected where enumerated as well (ie. plastic_bottles) and a final "houses_powered" variable results as a way to measure the amount of trash collected. prof_trash_df and gwynna_trash_df are similar but contain 95 observations and 108 observations respectively. The final combination of the 3 contains the sum of the three separate dataframes as the dataframes are stacked together into one dataframe.
+  mr_trash_df contains the converted xlsx file to R studio dataframe data which has 584 observations of which are the days that the trash wheel was deployed and used. The amount of trash collected was enumerated (ie. weight_tons) and the types of trash collected where enumerated as well (ie. plastic_bottles) and a final "houses_powered" variable results as a way to measure the amount of trash collected. prof_trash_df and gwynna_trash_df are similar but contain 106 observations and 155 observations respectively. The final combination of the 3 contains the sum of the three separate dataframes as the dataframes are stacked together into one dataframe.
   
   
 ### For available data, what was the total weight of trash collected by Professor Trash Wheel? 
@@ -177,11 +177,18 @@ sum(pull(mr_trash_df, weight_tons))
 ```
 
 __Response__
-  The total weight of trash collected by professor trash wheel was 3496.72 tons. 
+  The total weight of trash collected by professor trash wheel was 1875.1 tons. 
 
 
 ### What was the total number of cigarette butts collected by Gwynnda in July of 2021?
 ```{r}
-sum(pull(gwynnda_trash_df, cigarette_butts))
+gwynnda_trash_df_1 =
+  filter(gwynnda_trash_df, month == "July") |> 
+  filter(year == 2021)
+sum(pull(gwynnda_trash_df_1,cigarette_butts))
 ```
 
+__Response__
+  The total # of cigarette butts collected by Gwynnda in July of 2021 is 16,300 butts.
+  
+# Problem 3
